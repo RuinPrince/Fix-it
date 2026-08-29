@@ -1,0 +1,104 @@
+# =============================================================================
+# Fix It — Development Docker Compose Override
+# =============================================================================
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# This override:
+#   - Mounts source code for live reload (nodemon / vite HMR)
+#   - Exposes debug ports (9229 for Node.js inspector)
+#   - Disables Nginx (access services directly)
+#   - Sets development environment variables
+#   - Relaxes resource limits for faster iteration
+# =============================================================================
+
+version: "3.9"
+
+services:
+  # ---------------------------------------------------------------------------
+  # MySQL — Development overrides
+  # ---------------------------------------------------------------------------
+  mysql:
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: dev_root_password
+      MYSQL_DATABASE: fixit_dev
+      MYSQL_USER: fixit_dev_user
+      MYSQL_PASSWORD: fixit_dev_password
+
+  # ---------------------------------------------------------------------------
+  # Redis — Development overrides
+  # ---------------------------------------------------------------------------
+  redis:
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 64mb
+      --maxmemory-policy allkeys-lru
+
+  # ---------------------------------------------------------------------------
+  # Backend — Development overrides with live reload
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "5000:5000"
+      - "9229:9229"
+    environment:
+      NODE_ENV: development
+      SERVER_PORT: 5000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: fixit_dev
+      DB_USER: fixit_dev_user
+      DB_PASSWORD: fixit_dev_password
+      DB_DIALECT: mysql
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      JWT_SECRET: dev_jwt_secret_not_for_production
+      JWT_EXPIRY: 30d
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173"
+      LOG_LEVEL: debug
+    volumes:
+      - ./backend/src:/app/src:delegated
+      - ./backend/package.json:/app/package.json:ro
+      - /app/node_modules
+      - ./backend/uploads:/app/uploads
+    command: ["npx", "nodemon", "--inspect=0.0.0.0:9229", "src/index.js"]
+
+  # ---------------------------------------------------------------------------
+  # Admin Dashboard — Development overrides with HMR
+  # ---------------------------------------------------------------------------
+  admin-dashboard:
+    build:
+      context: ./admin-dashboard
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+      - "5173:5173"
+    environment:
+      NODE_ENV: development
+      VITE_API_BASE_URL: http://localhost:5000/api
+      VITE_SOCKET_URL: http://localhost:5000
+    volumes:
+      - ./admin-dashboard/src:/app/src:delegated
+      - ./admin-dashboard/public:/app/public:delegated
+      - ./admin-dashboard/package.json:/app/package.json:ro
+      - ./admin-dashboard/vite.config.js:/app/vite.config.js:ro
+      - /app/node_modules
+    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "3000"]
+
+  # ---------------------------------------------------------------------------
+  # Nginx — Disabled in development
+  # ---------------------------------------------------------------------------
+  nginx:
+    profiles:
+      - disabled
