@@ -9,3 +9,5 @@ logs/
 *.tgz
 coverage/
 .nyc_output/
+
+.vercel
