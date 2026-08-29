@@ -56,11 +56,9 @@ export const errorHandler = (err, req, res, _next) => {
 
   // Default server error
   const statusCode = err.statusCode || 500;
-  const message = process.env.NODE_ENV === 'production'
-    ? 'Internal server error'
-    : err.message || 'Internal server error';
+  const message = err.message || 'Internal server error';
 
-  return errorResponse(res, message, statusCode);
+  return errorResponse(res, message, statusCode, { stack: err.stack });
 };
 
 /**
