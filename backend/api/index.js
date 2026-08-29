@@ -52,5 +52,8 @@ export default async (req, res) => {
     return res.status(500).json({ error: 'Previous initialization failed', message: initError.message, stack: initError.stack });
   }
 
+  // Prevent Express from trying to re-parse the body (Vercel already parsed it)
+  req._body = true;
+
   return appInstance(req, res);
 };
