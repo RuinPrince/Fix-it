@@ -6,8 +6,17 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange?logo=mysql)](https://www.mysql.com/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue?logo=docker)](https://www.docker.com/)
 
-**Fix It** is a production-grade, full-stack civic issue reporting platform designed to connect citizens with their local government for faster, smarter issue resolution. It features a citizen-facing mobile application (planned), a comprehensive admin dashboard for officials, and a robust Node.js API backend powered by MySQL.
+**Fix It** is a production-grade, full-stack civic issue reporting platform designed to connect citizens with their local government for faster, smarter issue resolution. 
 
+It features:
+1. **Citizen Mobile App (Flutter)**: For citizens to easily report and track issues.
+2. **Admin Web Dashboard (React)**: For government officials and admins to track, assign, and resolve issues.
+3. **Backend API (Node.js)**: A robust REST API powering both the mobile app and the web dashboard.
+
+## 🔴 Live Demos
+
+* **Admin Dashboard (Vercel)**: [https://fix-it-mqd4.vercel.app](https://fix-it-mqd4.vercel.app) (Login: `admin@fixit.gov.in` / `password123`)
+* **Backend API (Vercel)**: [https://fix-it-pi.vercel.app](https://fix-it-pi.vercel.app)
 ## 🚀 Key Features
 
 ### For Citizens
@@ -27,7 +36,7 @@
 ## 🛠️ Technology Stack
 
 * **Backend**: Node.js, Express.js
-* **Database**: MySQL (Sequelize ORM), Redis (Caching/Queues - optional)
+* **Database**: SQLite (via Sequelize ORM on Vercel), Redis (Caching/Queues - optional)
 * **Frontend Dashboard**: React 18, Vite, Zustand (State Management), Recharts (Analytics), React-Leaflet (Maps)
 * **Authentication**: JWT (JSON Web Tokens) with Access/Refresh strategy
 * **Real-time**: Socket.IO for live notifications and chat
