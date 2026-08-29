@@ -17,7 +17,7 @@ export const authenticate = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fixit_super_secret_key_123');
 
     const user = await User.findByPk(decoded.id, {
       attributes: { exclude: ['password_hash'] },
@@ -56,7 +56,7 @@ export const optionalAuth = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fixit_super_secret_key_123');
     const user = await User.findByPk(decoded.id, {
       attributes: { exclude: ['password_hash'] },
     });
@@ -78,13 +78,13 @@ export const optionalAuth = async (req, res, next) => {
 export const generateTokens = (user) => {
   const accessToken = jwt.sign(
     { id: user.id, email: user.email, role: user.role },
-    process.env.JWT_SECRET,
+    process.env.JWT_SECRET || 'fixit_super_secret_key_123',
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 
   const refreshToken = jwt.sign(
     { id: user.id },
-    process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET + '_refresh',
+    process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET || 'fixit_super_secret_key_123') + '_refresh',
     { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
   );
 
@@ -95,7 +95,7 @@ export const generateTokens = (user) => {
  * Verify refresh token
  */
 export const verifyRefreshToken = (token) => {
-  return jwt.verify(token, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET + '_refresh');
+  return jwt.verify(token, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET || 'fixit_super_secret_key_123') + '_refresh');
 };
 
 export default { authenticate, optionalAuth, generateTokens, verifyRefreshToken };
