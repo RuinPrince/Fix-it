@@ -1,4 +1,5 @@
-import 'sqlite3';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 let initialized = false;
 let appInstance = null;
@@ -7,6 +8,7 @@ let initError = null;
 
 try {
   // Force Vercel's bundler to include sqlite3 (Sequelize requires it dynamically)
+  require('sqlite3');
 } catch (err) {
   topLevelError = err;
 }
