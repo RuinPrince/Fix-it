@@ -2,6 +2,9 @@ let initialized = false;
 let initError = null;
 let appInstance = null;
 
+// Force Vercel's bundler to include sqlite3 (Sequelize requires it dynamically)
+import 'sqlite3';
+
 // Vercel serverless function entrypoint
 export default async (req, res) => {
   if (!initialized) {
