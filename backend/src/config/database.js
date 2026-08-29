@@ -7,9 +7,13 @@ import logger from '../utils/logger.js';
 
 dotenv.config();
 
+// Vercel serverless environment is read-only except for /tmp
+const isVercel = process.env.VERCEL === '1';
+const storagePath = isVercel ? '/tmp/fixit_database.sqlite' : './fixit_database.sqlite';
+
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: './fixit_database.sqlite',
+  storage: storagePath,
   logging: (msg) => logger.debug(msg),
   define: {
     timestamps: true,
