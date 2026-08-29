@@ -22,7 +22,14 @@ const logger = winston.createLogger({
     logFormat
   ),
   defaultMeta: { service: 'fixit-api' },
-  transports: [
+  transports: process.env.VERCEL === '1' 
+    ? [
+        // On Vercel (read-only FS), only use console transport
+        new winston.transports.Console({
+          format: combine(colorize(), logFormat),
+        })
+      ]
+    : [
     // Console transport with colors
     new winston.transports.Console({
       format: combine(colorize(), logFormat),
