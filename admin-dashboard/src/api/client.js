@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Default to backend server
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'https://fix-it-pi.vercel.app/api/v1';
 
 const apiClient = axios.create({
   baseURL: API_URL,
